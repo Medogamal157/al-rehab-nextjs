@@ -122,25 +122,52 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
 
   const handleExportToExcel = async () => {
     try {
-      // Dynamic import of xlsx
-      const XLSX = await import('xlsx');
+      // Dynamic import of exceljs
+      const ExcelJS = await import('exceljs');
       
-      const data = filteredRequests.map(req => ({
-        Company: req.companyName,
-        Contact: req.contactName,
-        Email: req.email,
-        Phone: req.phone || 'N/A',
-        Country: req.country,
-        Products: req.productInterest || 'N/A',
-        Message: req.message || 'N/A',
-        'Submitted At': new Date(req.createdAt).toLocaleString(),
-        Status: req.status,
-      }));
-
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Export Requests');
-      XLSX.writeFile(wb, `export-requests-${new Date().toISOString().split('T')[0]}.xlsx`);
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Export Requests');
+      
+      // Define columns
+      worksheet.columns = [
+        { header: 'Company', key: 'company', width: 25 },
+        { header: 'Contact', key: 'contact', width: 20 },
+        { header: 'Email', key: 'email', width: 30 },
+        { header: 'Phone', key: 'phone', width: 18 },
+        { header: 'Country', key: 'country', width: 15 },
+        { header: 'Products', key: 'products', width: 30 },
+        { header: 'Message', key: 'message', width: 40 },
+        { header: 'Submitted At', key: 'submittedAt', width: 20 },
+        { header: 'Status', key: 'status', width: 12 },
+      ];
+      
+      // Add rows
+      filteredRequests.forEach(req => {
+        worksheet.addRow({
+          company: req.companyName,
+          contact: req.contactName,
+          email: req.email,
+          phone: req.phone || 'N/A',
+          country: req.country,
+          products: req.productInterest || 'N/A',
+          message: req.message || 'N/A',
+          submittedAt: new Date(req.createdAt).toLocaleString(),
+          status: req.status,
+        });
+      });
+      
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      
+      // Generate buffer and download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export-requests-${new Date().toISOString().split('T')[0]}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting to Excel:', error);
       alert('Failed to export to Excel. Please try again.');
