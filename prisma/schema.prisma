@@ -38,6 +38,21 @@ model Session {
   @@map("sessions")
 }
 
+// Login attempt tracking for rate limiting
+model LoginAttempt {
+  id          String   @id @default(uuid())
+  ipAddress   String
+  deviceId    String?  // Browser fingerprint or device identifier
+  email       String?  // The email that was attempted
+  success     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([ipAddress, createdAt])
+  @@index([deviceId, createdAt])
+  @@index([email, createdAt])
+  @@map("login_attempts")
+}
+
 enum UserRole {
   ADMIN
   SUPER_ADMIN
