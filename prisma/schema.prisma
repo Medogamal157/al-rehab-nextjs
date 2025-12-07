@@ -1,0 +1,325 @@
+// Al-Rehab Group - Prisma Schema
+// PostgreSQL Database Schema for Admin Dashboard
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== Authentication Models ====================
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String    // bcrypt hashed
+  name           String?
+  role           UserRole  @default(ADMIN)
+  isActive       Boolean   @default(true)
+  lastLogin      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ==================== Category Model ====================
+
+model Category {
+  id           String    @id @default(uuid())
+  name         String    // English name
+  slug         String    @unique
+  description  String?   @db.Text
+  icon         String?   // Icon identifier (e.g., "Wheat", "Apple")
+  color        String?   // Color for UI display (e.g., "amber-500")
+  image        String?   // Image path
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  products     Product[]
+
+  @@map("categories")
+}
+
+// ==================== Product Models ====================
+
+model Product {
+  id             String         @id @default(uuid())
+  name           String         // English name
+  englishName    String?        // Alternative English name
+  botanicalName  String?        // Scientific/botanical name
+  slug           String         @unique
+  description    String?        @db.Text
+  categoryId     String
+  category       Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  // Product Details
+  season         String?        // e.g., "Year-round", "Summer"
+  harvestSeason  String?        // e.g., "June - September"
+  packing        String?        // e.g., "4.5 kg cartons"
+  weight         String?        // e.g., "4.5 kg"
+  origin         String?        // e.g., "Egypt"
+  shelfLife      String?        // e.g., "12 months"
+  storageTemp    String?        // e.g., "Cool, dry place"
+  
+  // JSON fields for complex data
+  availableForms String[]       // e.g., ["Fresh", "Dried", "Frozen"]
+  specifications Json?          // Key-value specifications
+  features       String[]       // Product features/highlights
+  
+  // Status
+  isActive       Boolean        @default(true)
+  isFeatured     Boolean        @default(false)
+  displayOrder   Int            @default(0)
+  
+  // Timestamps
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  
+  // Relations
+  images         ProductImage[]
+
+  @@index([categoryId])
+  @@index([slug])
+  @@map("products")
+}
+
+model ProductImage {
+  id         String   @id @default(uuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url        String   // Image path/URL
+  alt        String?  // Alt text for accessibility
+  isMain     Boolean  @default(false) // Main/primary image
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+// ==================== Certificate Model ====================
+
+model Certificate {
+  id          String   @id @default(uuid())
+  name        String   // Short name (e.g., "ISO 22000")
+  fullName    String?  // Full name (e.g., "ISO 22000:2018 Food Safety")
+  slug        String   @unique
+  description String?  @db.Text
+  image       String?  // Certificate image path
+  issuer      String?  // Issuing organization
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  isFeatured  Boolean  @default(false) // Featured certificates appear on home page
+  isActive    Boolean  @default(true)
+  displayOrder Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("certificates")
+}
+
+// ==================== Export Request Model ====================
+
+model ExportRequest {
+  id            String              @id @default(uuid())
+  
+  // Contact Information
+  companyName   String
+  contactName   String
+  email         String
+  phone         String?
+  country       String
+  
+  // Request Details
+  productInterest String?           @db.Text // Products they're interested in
+  quantity      String?              // Estimated quantity
+  message       String?             @db.Text
+  
+  // Status Tracking
+  status        ExportRequestStatus @default(NEW)
+  notes         String?             @db.Text // Internal notes
+  assignedTo    String?             // Admin who's handling this
+  
+  // Timestamps
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  respondedAt   DateTime?
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("export_requests")
+}
+
+enum ExportRequestStatus {
+  NEW
+  IN_PROGRESS
+  CONTACTED
+  QUOTED
+  COMPLETED
+  CANCELLED
+}
+
+// ==================== Contact Information Model ====================
+
+model ContactInfo {
+  id          String   @id @default(uuid())
+  key         String   @unique @default("main") // Unique key for the setting
+  
+  // Company Info
+  companyName String?
+  
+  // Address
+  address     String?
+  city        String?
+  country     String?
+  
+  // Contact Details
+  phone       String?   // Primary phone
+  phoneAlt    String?   // Alternative phone
+  email       String?   // Primary email (info@)
+  emailSales  String?   // Sales email
+  whatsapp    String?   // WhatsApp number
+  
+  // Social Media
+  website     String?
+  facebook    String?
+  twitter     String?
+  linkedin    String?
+  instagram   String?
+  youtube     String?
+  
+  // Business Hours - JSON format: { "monday": { "open": "09:00", "close": "18:00", "closed": false }, ... }
+  workingHours Json?
+  
+  // Customer Service Info
+  customerServiceNote String? // e.g., "Available 24/7"
+  
+  // Map
+  mapEmbed    String?  @db.Text // Google Maps embed URL
+  
+  // Meta
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact_info")
+}
+
+// ==================== Analytics Models ====================
+
+model PageView {
+  id          String   @id @default(uuid())
+  
+  // Page Information
+  path        String   // The URL path (e.g., "/products", "/products/hibiscus")
+  pageName    String?  // Human-readable page name (e.g., "Home", "Products", "Product Details")
+  pageType    PageType @default(STATIC) // Whether it's a static or dynamic page
+  
+  // Dynamic page details (for product pages, etc.)
+  resourceType String? // e.g., "product", "certificate"
+  resourceId   String? // ID of the resource being viewed
+  resourceSlug String? // Slug of the resource being viewed
+  
+  // Visitor Information
+  ipAddress   String?  // Visitor IP address
+  country     String?  // Detected country from IP
+  city        String?  // Detected city from IP
+  region      String?  // State/Region
+  
+  // Browser/Device Info
+  userAgent   String?  @db.Text
+  referer     String?  // Where they came from
+  device      String?  // mobile, tablet, desktop
+  browser     String?  // Chrome, Firefox, Safari, etc.
+  os          String?  // Windows, MacOS, iOS, Android, etc.
+  
+  // Session tracking
+  sessionId   String?  // To group page views by session
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  
+  @@index([path])
+  @@index([pageName])
+  @@index([pageType])
+  @@index([country])
+  @@index([createdAt])
+  @@index([resourceType, resourceId])
+  @@map("page_views")
+}
+
+enum PageType {
+  STATIC    // Static pages like Home, About, Contact
+  DYNAMIC   // Dynamic pages like Product Details
+}
+
+// ==================== Rate Limiting Model ====================
+
+model RateLimit {
+  id         String   @id @default(uuid())
+  identifier String   // IP address or user ID
+  endpoint   String   // API endpoint
+  count      Int      @default(1)
+  windowStart DateTime @default(now())
+  expiresAt  DateTime
+
+  @@unique([identifier, endpoint])
+  @@index([expiresAt])
+  @@map("rate_limits")
+}
+
+// ==================== Audit Log Model ====================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String   // e.g., "CREATE", "UPDATE", "DELETE"
+  entity     String   // e.g., "Product", "Category"
+  entityId   String?
+  oldData    Json?    // Previous state
+  newData    Json?    // New state
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ==================== Site Settings Model ====================
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  type      String   @default("string") // string, json, boolean, number
+  group     String?  // For grouping settings (e.g., "general", "seo", "email")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

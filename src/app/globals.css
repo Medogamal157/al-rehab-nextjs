@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  
+  /* Brand Colors */
+  --brand-primary: #213D35;
+  --brand-secondary: #5E7C6C;
+  --brand-background: #F6F8F5;
+  --brand-text: #333333;
+  --brand-accent: #D6C7A1;
+  --brand-link: #758D74;
+  
+  --background: #F6F8F5;
+  --foreground: #333333;
+  --card: #ffffff;
+  --card-foreground: #333333;
+  --popover: #ffffff;
+  --popover-foreground: #333333;
+  --primary: #213D35;
+  --primary-foreground: #ffffff;
+  --secondary: #5E7C6C;
+  --secondary-foreground: #ffffff;
+  --muted: #E8EBE7;
+  --muted-foreground: #5E7C6C;
+  --accent: #D6C7A1;
+  --accent-foreground: #213D35;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(33, 61, 53, 0.15);
+  --input: transparent;
+  --input-background: #ffffff;
+  --switch-background: #5E7C6C;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #758D74;
+  --chart-1: #213D35;
+  --chart-2: #5E7C6C;
+  --chart-3: #758D74;
+  --chart-4: #D6C7A1;
+  --chart-5: #333333;
+  --radius: 0.5rem;
+  --sidebar: #F6F8F5;
+  --sidebar-foreground: #333333;
+  --sidebar-primary: #213D35;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #E8EBE7;
+  --sidebar-accent-foreground: #333333;
+  --sidebar-border: rgba(33, 61, 53, 0.15);
+  --sidebar-ring: #758D74;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  scroll-behavior: smooth;
+}
+
+/* Custom Animations */
+@layer utilities {
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(33, 61, 53, 0.3), 0 0 40px rgba(33, 61, 53, 0.1);
+  }
+  
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(214, 199, 161, 0.3), 0 0 40px rgba(214, 199, 161, 0.1);
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .shimmer {
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  .shadow-brand {
+    box-shadow: 0 4px 6px -1px rgba(33, 61, 53, 0.1),
+                0 2px 4px -1px rgba(214, 199, 161, 0.06),
+                0 10px 15px -3px rgba(33, 61, 53, 0.05);
+  }
+  
+  .shadow-accent {
+    box-shadow: 0 4px 6px -1px rgba(214, 199, 161, 0.2),
+                0 2px 4px -1px rgba(214, 199, 161, 0.1),
+                0 10px 15px -3px rgba(214, 199, 161, 0.1);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F6F8F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #213D35, #5E7C6C);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #5E7C6C, #758D74);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::selection {
+  background-color: rgba(33, 61, 53, 0.2);
+  color: #213D35;
+}
