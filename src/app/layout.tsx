@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Al-Rehab Group" }],
   creator: "Al-Rehab Group",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
