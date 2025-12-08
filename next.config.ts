@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   images: {
+    // Enable lazy loading by default for all images
+    // Images with priority prop will still load eagerly
+    loader: 'default',
+    formats: ['image/webp', 'image/avif'],
     remotePatterns: [
       {
         protocol: "https",
