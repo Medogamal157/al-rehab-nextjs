@@ -4,11 +4,12 @@ import { prisma } from '@/lib/prisma';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://al-rehab-group.com';
 
-  // Get all active products
+  // Get all active products with both create and update timestamps
   const products = await prisma.product.findMany({
     where: { isActive: true },
     select: { 
       slug: true, 
+      createdAt: true,
       updatedAt: true 
     },
     orderBy: { updatedAt: 'desc' },
@@ -90,9 +91,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic product pages
+  // Dynamic product pages - automatically updated when products are added/modified
   const productPages: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${baseUrl}/products/${product.slug}`,
+    // Use updatedAt for lastModified to reflect any changes to the product
+    // Search engines will see when the product was last updated
     lastModified: product.updatedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
