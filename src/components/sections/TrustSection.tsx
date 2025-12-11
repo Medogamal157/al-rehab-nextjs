@@ -174,38 +174,42 @@ export function TrustSection() {
             const certImage = cert.image || getDefaultImage(cert.name);
             
             return (
-              <motion.div
+              <Link
                 key={cert.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ 
-                  duration: 0.5,
-                  delay: 0.5 + index * 0.1
-                }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center hover:bg-white/15 hover:border-[#c4a24c]/40 transition-all duration-300 group cursor-pointer"
+                href="/certificates"
               >
-                <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-xl flex items-center justify-center p-3 shadow-lg group-hover:shadow-xl transition-shadow overflow-hidden">
-                  {certImage ? (
-                    <Image 
-                      src={certImage} 
-                      alt={cert.name} 
-                      width={80} 
-                      height={80} 
-                      className="w-full h-full object-contain" 
-                    />
-                  ) : (
-                    <Icon className="w-10 h-10 text-[#2d7a3e]" />
-                  )}
-                </div>
-                <h3 className="text-white text-lg mb-2 group-hover:text-[#c4a24c] transition-colors">
-                  {cert.name}
-                </h3>
-                <p className="text-white/60 text-sm group-hover:text-white/80 transition-colors">
-                  {cert.fullName || cert.name}
-                </p>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ 
+                    duration: 0.5,
+                    delay: 0.5 + index * 0.1
+                  }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center hover:bg-white/15 hover:border-[#c4a24c]/40 transition-all duration-300 group cursor-pointer"
+                >
+                  <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-xl flex items-center justify-center p-3 shadow-lg group-hover:shadow-xl transition-shadow overflow-hidden">
+                    {certImage ? (
+                      <Image 
+                        src={certImage} 
+                        alt={cert.name} 
+                        width={80} 
+                        height={80} 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : (
+                      <Icon className="w-10 h-10 text-[#2d7a3e]" />
+                    )}
+                  </div>
+                  <h3 className="text-white text-lg mb-2 group-hover:text-[#c4a24c] transition-colors">
+                    {cert.name}
+                  </h3>
+                  <p className="text-white/60 text-sm group-hover:text-white/80 transition-colors">
+                    {cert.fullName || cert.name}
+                  </p>
+                </motion.div>
+              </Link>
             );
           })}
         </div>
