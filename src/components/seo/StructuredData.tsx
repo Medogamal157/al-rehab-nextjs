@@ -55,8 +55,8 @@ export function StructuredData() {
     ],
     sameAs: [
       // Add your social media URLs here
-      // "https://www.facebook.com/alrehabgroup",
-      // "https://www.linkedin.com/company/alrehabgroup",
+      // "https://www.facebook.com/al-rehab-group-for-export",
+      "https://www.linkedin.com/company/al-rehab-group-for-export"
     ],
     hasOfferCatalog: {
       "@type": "OfferCatalog",

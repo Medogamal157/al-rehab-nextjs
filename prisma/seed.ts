@@ -48,7 +48,7 @@ async function main() {
       phoneAlt: '+20 987 654 321',
       email: 'info@al-rehabgroup.com',
       emailSales: 'export@al-rehabgroup.com',
-      website: 'https://herbsegypt.com',
+      website: 'https://al-rehabgroup.com',
       whatsapp: '+201055558189',
       customerServiceNote: 'Available 24/7',
       workingHours: {
@@ -236,7 +236,7 @@ async function main() {
   // Create site settings
   const settings = [
     { key: 'site_name', value: 'Al-Rehab Group for Export', type: 'string', group: 'general' },
-    { key: 'site_name_ar', value: 'مجموعة الرحاب', type: 'string', group: 'general' },
+    { key: 'site_name_ar', value: 'مجموعة الرحاب للتصدير', type: 'string', group: 'general' },
     { key: 'site_description', value: 'Premium Egyptian Agricultural Exports', type: 'string', group: 'seo' },
     { key: 'meta_keywords', value: 'egypt, export, agriculture, fruits, vegetables, herbs', type: 'string', group: 'seo' },
   ];
