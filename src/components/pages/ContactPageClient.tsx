@@ -133,18 +133,54 @@ export function ContactPageClient() {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you for your inquiry! We will contact you within 24 hours.');
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      country: '',
-      phone: '',
-      message: ''
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle rate limiting (429)
+        if (response.status === 429) {
+          const retryAfter = data.retryAfter;
+          const hours = Math.ceil(retryAfter / 3600);
+          setSubmitError(`Too many messages sent. Please try again in ${hours} hour${hours !== 1 ? 's' : ''}.`);
+        } else {
+          setSubmitError(data.error || 'Failed to send your message. Please try again.');
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Success
+      toast.success(data.message || 'Thank you for your inquiry! We will contact you within 24 hours.');
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        country: '',
+        phone: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError('An error occurred while sending your message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -290,6 +326,12 @@ export function ContactPageClient() {
                   Request Export Quote
                 </h3>
 
+                {submitError && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm">{submitError}</p>
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -381,10 +423,11 @@ export function ContactPageClient() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-[#2d7a3e] hover:bg-[#235a2f] text-white py-6"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#2d7a3e] hover:bg-[#235a2f] text-white py-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send size={20} className="mr-2" />
-                    Send Inquiry
+                    {isSubmitting ? 'Sending...' : 'Send Inquiry'}
                   </Button>
 
                   <p className="text-sm text-gray-500 text-center">

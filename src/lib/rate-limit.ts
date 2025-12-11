@@ -16,6 +16,11 @@ const strictConfig: RateLimitConfig = {
   maxRequests: 10, // 10 requests per minute (for auth endpoints)
 };
 
+const contactFormConfig: RateLimitConfig = {
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  maxRequests: 5, // 5 messages per day per IP/user
+};
+
 export async function rateLimit(
   request: NextRequest,
   endpoint: string,
@@ -131,6 +136,10 @@ export function rateLimitAuth(request: NextRequest, endpoint: string) {
 
 export function rateLimitApi(request: NextRequest, endpoint: string) {
   return rateLimit(request, endpoint, defaultConfig);
+}
+
+export function rateLimitContactForm(request: NextRequest, endpoint: string) {
+  return rateLimit(request, endpoint, contactFormConfig);
 }
 
 // Helper to create rate limit response headers

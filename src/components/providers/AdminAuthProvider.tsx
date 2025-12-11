@@ -179,7 +179,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('admin-token');
     localStorage.removeItem('admin-user');
     setToken(null);
@@ -187,7 +187,41 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     // Also clear the cookie by calling logout API
     fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
     router.push('/login');
-  };
+  }, [router]);
+
+  // Check for token expiration on mount and when token changes
+  useEffect(() => {
+    if (!token) return;
+
+    // Try to decode JWT to check expiration
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return;
+
+      const decoded = JSON.parse(atob(parts[1]));
+      const expiresAt = decoded.exp ? decoded.exp * 1000 : null;
+
+      if (!expiresAt) return;
+
+      const now = Date.now();
+      const timeUntilExpiry = expiresAt - now;
+
+      // If token already expired, logout immediately
+      if (timeUntilExpiry <= 0) {
+        logout();
+        return;
+      }
+
+      // Set a timer to logout when token expires
+      const expiryTimer = setTimeout(() => {
+        logout();
+      }, timeUntilExpiry);
+
+      return () => clearTimeout(expiryTimer);
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+    }
+  }, [token, logout]);
 
   return (
     <AdminAuthContext.Provider

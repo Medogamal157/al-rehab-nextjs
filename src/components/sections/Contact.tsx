@@ -133,36 +133,53 @@ export function Contact() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Save to localStorage for admin panel
-    if (typeof window !== 'undefined') {
-      const existingRequests = JSON.parse(localStorage.getItem('exportRequests') || '[]');
-      const newRequest = {
-        id: Date.now().toString(),
-        ...formData,
-        submittedAt: new Date().toISOString()
-      };
-      localStorage.setItem('exportRequests', JSON.stringify([...existingRequests, newRequest]));
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle rate limiting (429)
+        if (response.status === 429) {
+          const retryAfter = data.retryAfter;
+          const hours = Math.ceil(retryAfter / 3600);
+          setSubmitError(`Too many messages sent. Please try again in ${hours} hour${hours !== 1 ? 's' : ''}.`);
+        } else {
+          setSubmitError(data.error || 'Failed to send your message. Please try again.');
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Success
+      toast.success(data.message || 'Thank you for your inquiry! We will contact you within 24 hours.');
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        country: '',
+        phone: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError('An error occurred while sending your message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    toast.success('Thank you for your inquiry! We will contact you within 24 hours.');
-    
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      country: '',
-      phone: '',
-      message: ''
-    });
-    setIsSubmitting(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -321,6 +338,12 @@ export function Contact() {
               <h3 className="text-xl sm:text-2xl text-gray-900 mb-4 sm:mb-6">
                 Request Export Quote
               </h3>
+
+              {submitError && (
+                <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-700 text-xs sm:text-sm">{submitError}</p>
+                </div>
+              )}
               
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
