@@ -63,15 +63,13 @@ export async function POST(request: NextRequest) {
     // Save contact form submission to database
     const contactSubmission = await prisma.exportRequest.create({
       data: {
-        name,
+        contactName: name,
         email,
-        company: company || null,
-        country: country || null,
+        companyName: company || 'N/A',
+        country: country || 'N/A',
         phone: phone || null,
-        message,
-        status: 'new',
-        source: 'contact-form',
-        clientIp,
+        message: message || null,
+        status: 'NEW',
       },
     });
 

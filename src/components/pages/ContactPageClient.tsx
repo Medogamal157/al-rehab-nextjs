@@ -7,6 +7,7 @@ import { PharaohBorder } from '@/components/sections/EgyptianDecor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 interface WorkingHour {
   dayOfWeek: string;
