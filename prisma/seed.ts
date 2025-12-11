@@ -235,7 +235,7 @@ async function main() {
 
   // Create site settings
   const settings = [
-    { key: 'site_name', value: 'Al-Rehab Group', type: 'string', group: 'general' },
+    { key: 'site_name', value: 'Al-Rehab Group for Export', type: 'string', group: 'general' },
     { key: 'site_name_ar', value: 'مجموعة الرحاب', type: 'string', group: 'general' },
     { key: 'site_description', value: 'Premium Egyptian Agricultural Exports', type: 'string', group: 'seo' },
     { key: 'meta_keywords', value: 'egypt, export, agriculture, fruits, vegetables, herbs', type: 'string', group: 'seo' },

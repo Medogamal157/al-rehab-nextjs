@@ -84,7 +84,7 @@ nano .env
 
 **Important**: Update these values in `.env`:
 - `DATABASE_URL`: Your PostgreSQL connection string
-- `NEXTAUTH_URL`: Your production domain (e.g., https://alrehabgroup.com)
+- `NEXTAUTH_URL`: Your production domain (e.g., https://al-rehabgroup.com)
 - `NEXTAUTH_SECRET`: Generate with `openssl rand -base64 32`
 
 #### 3. Install Dependencies & Build

@@ -3,13 +3,33 @@ import { ProductsPageClient } from '@/components/pages/ProductsPageClient';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Products - Al-REHAB GROUP | Egyptian Herbs, Spices & Aromatic Seeds Export',
-  description: "Explore Al-REHAB GROUP's premium selection of Egyptian herbs (parsley, dill, basil, chamomile), authentic spices (cumin, coriander, caraway), and aromatic seeds (fennel, sesame). Certified organic, available year-round for B2B export.",
-  keywords: 'Egyptian herbs export, premium spices Egypt, organic herbs, parsley Egypt, dill tips, basil herbs, cumin seeds, coriander seeds, fennel seeds Egypt, sesame seeds, chamomile flowers Egypt, hibiscus flowers, aromatic seeds export, B2B herbs supplier',
+  title: 'Products - Al-Rehab Group for Export | Egyptian Herbs, Spices & Seeds Wholesale',
+  description: "Premium Egyptian herbs and spices from Al-Rehab Group for Export. Chamomile, hibiscus, basil, cumin, coriander, fennel seeds. Organic & conventional. B2B wholesale supplier. Year-round availability.",
+  keywords: [
+    'egyptian herbs export',
+    'herbs and spices egypt',
+    'premium spices egypt',
+    'organic herbs egypt',
+    'chamomile egypt',
+    'hibiscus egypt',
+    'basil herbs egypt',
+    'cumin seeds egypt',
+    'coriander seeds egypt',
+    'fennel seeds egypt',
+    'sesame seeds egypt',
+    'aromatic seeds export',
+    'B2B herbs supplier egypt',
+    'wholesale herbs egypt',
+    'dried herbs egypt',
+  ],
   openGraph: {
     type: 'website',
-    title: 'Products - Al-REHAB GROUP | Egyptian Herbs, Spices & Aromatic Seeds Export',
-    description: "Explore Al-REHAB GROUP's premium selection of Egyptian herbs, spices, and aromatic seeds.",
+    title: 'Products - Al-Rehab Group for Export | Egyptian Herbs & Spices',
+    description: "Premium Egyptian herbs, spices, and aromatic seeds for B2B export.",
+    url: 'https://al-rehabgroup.com/products',
+  },
+  alternates: {
+    canonical: 'https://al-rehabgroup.com/products',
   },
 };
 

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { PharaohBorder } from '@/components/sections/EgyptianDecor';
 
 export const metadata: Metadata = {
-  title: 'Export Terms & Conditions - Al-REHAB GROUP | Egyptian Herbs & Spices',
-  description: 'Export terms and conditions for Al-REHAB GROUP. Learn about our international trade policies, shipping, and documentation.',
+  title: 'Export Terms & Conditions - Al-Rehab Group for Export | Egyptian Herbs & Spices',
+  description: 'Export terms and conditions for Al-Rehab Group for Export. Learn about our international trade policies, shipping, and documentation.',
 };
 
 export default function ExportTermsPage() {

@@ -96,14 +96,14 @@ export function Footer() {
             <Link href="/">
               <Image 
                 src="/footer_logo.png" 
-                alt="Al-REHAB GROUP for Export" 
+                alt="Al-Rehab Group for Export" 
                 width={200}
                 height={112}
                 className="h-20 sm:h-24 md:h-28 w-auto mb-3 sm:mb-4" 
               />
             </Link>
             <p className="text-white/70 mb-3 sm:mb-4 text-sm sm:text-base">
-              Al-REHAB GROUP - Premium Egyptian herbs and spices exported worldwide with excellence and authenticity.
+              Al-Rehab Group for Export - Premium Egyptian herbs and spices exported worldwide with excellence and authenticity.
             </p>
             <div className="flex items-center gap-2 text-white/70">
               <MapPin size={16} />

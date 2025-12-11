@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 
 export const metadata: Metadata = {
   title: 'Certificates | Al-Rehab Admin',
-  description: 'Manage certificates for Al-Rehab Group',
+  description: 'Manage certificates for Al-Rehab Group for Export',
   robots: {
     index: false,
     follow: false,

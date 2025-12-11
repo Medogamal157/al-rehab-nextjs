@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { SitemapPageClient } from '@/components/pages/SitemapPageClient';
 
 export const metadata: Metadata = {
-  title: 'Sitemap | Al-Rehab Group - Site Navigation',
-  description: 'Browse all pages and products available on Al-Rehab Group website. Complete site navigation for Egyptian herbs, spices, and medicinal plants.',
+  title: 'Sitemap | Al-Rehab Group for Export - Site Navigation',
+  description: 'Browse all pages and products available on Al-Rehab Group for Export website. Complete site navigation for Egyptian herbs, spices, and medicinal plants.',
   keywords: [
     'sitemap',
     'site navigation',
-    'Al-Rehab Group pages',
+    'Al-Rehab Group for Export pages',
     'product list',
     'Egyptian herbs',
     'website map',

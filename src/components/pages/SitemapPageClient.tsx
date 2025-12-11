@@ -71,7 +71,7 @@ export function SitemapPageClient() {
   }, []);
 
   const mainPages = [
-    { name: 'Home', href: '/', icon: Home, description: 'Welcome to Al-Rehab Group' },
+    { name: 'Home', href: '/', icon: Home, description: 'Welcome to Al-Rehab Group for Export' },
     { name: 'About Us', href: '/about', icon: Info, description: 'Learn about our company and mission' },
     { name: 'Products', href: '/products', icon: Package, description: 'Browse our premium Egyptian products' },
     { name: 'Certificates', href: '/certificates', icon: Award, description: 'View our quality certifications' },

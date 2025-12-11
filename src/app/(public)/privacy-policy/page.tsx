@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { PharaohBorder } from '@/components/sections/EgyptianDecor';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Al-REHAB GROUP | Egyptian Herbs & Spices Export',
-  description: 'Privacy Policy for Al-REHAB GROUP. Learn how we collect, use, and protect your personal information.',
+  title: 'Privacy Policy - Al-Rehab Group for Export | Egyptian Herbs & Spices Export',
+  description: 'Privacy Policy for Al-Rehab Group for Export. Learn how we collect, use, and protect your personal information.',
 };
 
 export default function PrivacyPolicyPage() {

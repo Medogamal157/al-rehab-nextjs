@@ -161,7 +161,7 @@ export function About() {
           >
             <div className="inline-block mb-3 sm:mb-4">
               <span className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#213D35]/10 text-[#213D35] rounded-full border border-[#213D35]/20 text-xs sm:text-sm md:text-base">
-                About Al-REHAB GROUP
+                About Al-Rehab Group for Export
               </span>
             </div>
 
@@ -170,11 +170,11 @@ export function About() {
             </h2>
 
             <p className="text-sm sm:text-base md:text-lg text-[#333333]/80 mb-4 sm:mb-6">
-              Al-REHAB GROUP is rooted in the rich heritage of Egyptian agriculture, bringing you the finest herbs and spices from the land where these treasures have been cultivated for millennia. Our commitment to quality and authenticity makes us a trusted partner for businesses worldwide.
+              Al-Rehab Group for Export is rooted in the rich heritage of Egyptian agriculture, bringing you the finest herbs and spices from the land where these treasures have been cultivated for millennia. Our commitment to quality and authenticity makes us a trusted partner for businesses worldwide.
             </p>
 
             <p className="text-sm sm:text-base md:text-lg text-[#333333]/80 mb-4 sm:mb-6">
-              From our facilities in Faiyum to your global markets, Al-REHAB GROUP ensures every product carries the essence of Egyptian excellence, backed by modern quality standards and sustainable farming practices. We provide 24/7 customer service and tailored export solutions for your business needs.
+              From our facilities in Faiyum to your global markets, Al-Rehab Group for Export ensures every product carries the essence of Egyptian excellence, backed by modern quality standards and sustainable farming practices. We provide 24/7 customer service and tailored export solutions for your business needs.
             </p>
             
             {/* Simplified Decorative Border */}

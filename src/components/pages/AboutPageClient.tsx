@@ -70,7 +70,7 @@ export function AboutPageClient() {
           >
             <div className="inline-block mb-4">
               <span className="px-4 py-2 bg-[#c4a24c]/10 text-[#c4a24c] rounded-full border border-[#c4a24c]/20">
-                About Al-REHAB GROUP
+                About Al-Rehab Group for Export
               </span>
             </div>
 

@@ -361,7 +361,7 @@ export function GlobalReach() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <span className="text-[#213D35]">Al-REHAB GROUP&apos;s</span> Global Reach
+            <span className="text-[#213D35]">Al-Rehab Group for Export&apos;s</span> Global Reach
           </motion.h2>
 
           <motion.p
@@ -371,7 +371,7 @@ export function GlobalReach() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            Trusted by businesses worldwide, Al-REHAB GROUP delivers premium Egyptian herbs and spices across continents with professionalism and reliability
+            Trusted by businesses worldwide, Al-Rehab Group for Export delivers premium Egyptian herbs and spices across continents with professionalism and reliability
           </motion.p>
         </motion.div>
 

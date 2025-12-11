@@ -104,7 +104,7 @@ export function AdminOverview() {
       >
         <h1 className="text-3xl mb-2">Welcome to Admin Dashboard</h1>
         <p className="text-white/80">
-          Manage your Al-Rehab Group website content and view export requests
+          Manage your Al-Rehab Group for Export website content and view export requests
         </p>
       </motion.div>
 

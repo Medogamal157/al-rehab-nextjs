@@ -99,7 +99,7 @@ export function Hero() {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D6C7A1]" />
-                Al-REHAB GROUP - Premium Egyptian Herbs & Spices Exporter
+                Al-Rehab Group for Export - Premium Egyptian Herbs & Spices Exporter
               </motion.span>
             </motion.div>
             

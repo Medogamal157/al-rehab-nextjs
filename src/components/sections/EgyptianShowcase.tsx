@@ -121,7 +121,7 @@ export function EgyptianShowcase() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Al-REHAB GROUP
+              Al-Rehab Group for Export
             </motion.span>
             <br />
             <motion.span

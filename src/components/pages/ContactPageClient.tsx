@@ -443,7 +443,7 @@ export function ContactPageClient() {
           >
             <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-lg border border-gray-100">
               <MapPin className="w-5 h-5 text-[#2d7a3e]" />
-              <span className="text-gray-900">{contact.companyName || 'Al-Rehab Group'} - {contact.city}, {contact.country}</span>
+              <span className="text-gray-900">{contact.companyName || 'Al-Rehab Group for Export'} - {contact.city}, {contact.country}</span>
             </div>
           </motion.div>
         </div>

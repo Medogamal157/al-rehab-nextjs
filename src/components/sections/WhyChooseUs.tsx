@@ -88,14 +88,14 @@ export function WhyChooseUs() {
         >
           <div className="inline-block mb-4">
             <span className="px-4 py-2 bg-[#2d7a3e]/10 text-[#2d7a3e] rounded-full border border-[#2d7a3e]/20">
-              Why Partner With Al-REHAB GROUP
+              Why Partner With Al-Rehab Group for Export
             </span>
           </div>
           <h2 className="text-4xl md:text-5xl text-gray-900 mb-6">
             Excellence in Every Aspect of Export
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Al-REHAB GROUP combines Egyptian heritage with modern professionalism to deliver exceptional herbs and spices export services to businesses worldwide
+            Al-Rehab Group for Export combines Egyptian heritage with modern professionalism to deliver exceptional herbs and spices export services to businesses worldwide
           </p>
           
           {/* Decorative Border */}

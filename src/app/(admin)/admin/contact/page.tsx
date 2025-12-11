@@ -4,7 +4,7 @@ import { verifyAdminAuth } from '@/lib/admin-auth-server';
 
 export const metadata: Metadata = {
   title: 'Contact Info | Al-Rehab Admin',
-  description: 'Manage contact information for Al-Rehab Group',
+  description: 'Manage contact information for Al-Rehab Group for Export',
   robots: {
     index: false,
     follow: false,
