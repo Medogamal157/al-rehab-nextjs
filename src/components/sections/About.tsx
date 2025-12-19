@@ -45,22 +45,22 @@ export function About() {
 
   const images = [
     {
-      src: 'https://images.unsplash.com/photo-1580590562911-89d31480d993?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwc3BpY2VzJTIwZGlzcGxheXxlbnwxfHx8fDE3NjE4NDU3NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      src: '/about_1.jpeg',
       alt: 'Premium Spices Display',
       className: 'rounded-lg shadow-lg w-full h-64 object-cover'
     },
     {
-      src: 'https://images.unsplash.com/photo-1724632824319-4b43e74e000c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZXJiJTIwcXVhbGl0eSUyMGNvbnRyb2wlMjBsYWJvcmF0b3J5fGVufDF8fHx8MTc2MTg0NTc3MHww&ixlib=rb-4.1.0&q=80&w=1080',
+      src: '/about_2.jpeg',
       alt: 'Quality Control Laboratory',
       className: 'rounded-lg shadow-lg w-full h-48 object-cover'
     },
     {
-      src: 'https://images.unsplash.com/photo-1558070510-504a0db43997?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcmdhbmljJTIwaGVyYnMlMjBmYXJtaW5nfGVufDF8fHx8MTc2MTg0NTc3Mnww&ixlib=rb-4.1.0&q=80&w=1080',
+      src: '/about_4.jpeg',
       alt: 'Organic Herbs Farming',
       className: 'rounded-lg shadow-lg w-full h-48 object-cover'
     },
     {
-      src: 'https://images.unsplash.com/photo-1741521311974-85002911c1c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGljZSUyMGV4cG9ydCUyMHBhY2thZ2luZ3xlbnwxfHx8fDE3NjE4NDU3NzB8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      src: '/about_3.jpeg',
       alt: 'Export Packaging',
       className: 'rounded-lg shadow-lg w-full h-64 object-cover'
     }
