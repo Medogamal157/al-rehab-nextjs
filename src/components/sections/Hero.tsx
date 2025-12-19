@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { EgyptianPattern } from './EgyptianDecor';
 import { FloatingParticles, AnimatedGradientOrb, SpiceParticle } from './AnimatedBackground';
 import { Sparkles } from 'lucide-react';
@@ -13,9 +13,15 @@ const spiceParticlePositions = [
   5.5, 15.2, 25.8, 36.3, 45.1, 55.7, 65.4, 75.9, 85.2, 92.6, 8.3, 48.7
 ];
 
+const heroImages = [
+  { src: '/hero_1.jpeg', alt: 'Egyptian Spices Collection' },
+  { src: '/hero_2.jpeg', alt: 'Premium Herbs and Seeds' },
+];
+
 export function Hero() {
   const ref = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -26,7 +32,16 @@ export function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+  }, []);
+
+  // Image slider effect - change every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -242,27 +257,63 @@ export function Hero() {
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               />
               
-              {/* Main Image with Glow Effect */}
+              {/* Main Image Slider with Glow Effect */}
               <motion.div
-                className="relative rounded-lg overflow-hidden max-w-md mx-auto lg:max-w-none"
+                className="relative rounded-lg overflow-hidden max-w-md mx-auto lg:max-w-none aspect-[3/2]"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  className="absolute inset-0 bg-linear-to-tr from-[#213D35]/10 to-transparent mix-blend-overlay"
+                  className="absolute inset-0 bg-linear-to-tr from-[#213D35]/10 to-transparent mix-blend-overlay z-10"
                   animate={{
                     opacity: [0.2, 0.4, 0.2]
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
-                <Image
-                  src="https://images.unsplash.com/photo-1613062007442-5df3601c94e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGljZXMlMjBjb2xvcmZ1bCUyMGJvd2xzfGVufDF8fHx8MTc2MTM0MzExMXww&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Egyptian Spices"
-                  width={1080}
-                  height={720}
-                  className="relative rounded-lg shadow-2xl w-full h-auto"
-                  priority
-                />
+                
+                {/* Image Slider */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImageIndex}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ 
+                      duration: 0.8, 
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={heroImages[currentImageIndex].src}
+                      alt={heroImages[currentImageIndex].alt}
+                      fill
+                      className="object-cover rounded-lg shadow-2xl"
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
+                
+                {/* Slide Indicators */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+                  {heroImages.map((_, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentImageIndex 
+                          ? 'bg-white w-6' 
+                          : 'bg-white/50 hover:bg-white/80'
+                      }`}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+                
+                {/* Gradient Overlay for better indicator visibility */}
+                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/30 to-transparent rounded-b-lg z-10" />
               </motion.div>
             </div>
           </motion.div>

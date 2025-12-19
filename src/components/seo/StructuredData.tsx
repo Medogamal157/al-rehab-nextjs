@@ -66,31 +66,239 @@ export function StructuredData() {
           "@type": "OfferCatalog",
           name: "Herbs",
           itemListElement: [
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Chamomile" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Basil" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Marjoram" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Mint" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Parsley" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Dill" } },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Chamomile",
+                description: "Premium Egyptian Chamomile - Dried flowers for tea and herbal products",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Basil",
+                description: "Premium Egyptian Basil - Dried herb for culinary and medicinal use",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Marjoram",
+                description: "Premium Egyptian Marjoram - Aromatic dried herb",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Mint",
+                description: "Premium Egyptian Mint - Fresh dried mint leaves",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Parsley",
+                description: "Premium Egyptian Parsley - Dried herb for culinary use",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Dill",
+                description: "Premium Egyptian Dill - Dried herb for culinary applications",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
           ],
         },
         {
           "@type": "OfferCatalog",
           name: "Spices",
           itemListElement: [
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Cumin Seeds" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Coriander Seeds" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Caraway Seeds" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Fennel Seeds" } },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Cumin Seeds",
+                description: "Premium Egyptian Cumin Seeds - Whole or ground spice",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Coriander Seeds",
+                description: "Premium Egyptian Coriander Seeds - Whole or ground spice",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Caraway Seeds",
+                description: "Premium Egyptian Caraway Seeds - Aromatic spice seeds",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Fennel Seeds",
+                description: "Premium Egyptian Fennel Seeds - Aromatic spice seeds",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
           ],
         },
         {
           "@type": "OfferCatalog",
           name: "Seeds & Flowers",
           itemListElement: [
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Hibiscus" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Sesame Seeds" } },
-            { "@type": "Offer", itemOffered: { "@type": "Product", name: "Nigella Seeds" } },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Hibiscus",
+                description: "Premium Egyptian Hibiscus - Dried flowers for tea",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Sesame Seeds",
+                description: "Premium Egyptian Sesame Seeds - White or hulled",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
+            { 
+              "@type": "Offer", 
+              itemOffered: { 
+                "@type": "Product", 
+                name: "Nigella Seeds",
+                description: "Premium Egyptian Nigella Seeds - Black seed for health and culinary use",
+                brand: { "@type": "Brand", name: "Al-Rehab Group" },
+                offers: {
+                  "@type": "Offer",
+                  availability: "https://schema.org/InStock",
+                  priceCurrency: "USD",
+                  price: "0",
+                  priceValidUntil: "2025-12-31",
+                  seller: { "@type": "Organization", name: "Al-Rehab Group for Export" }
+                }
+              } 
+            },
           ],
         },
       ],
