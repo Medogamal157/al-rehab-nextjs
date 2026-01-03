@@ -18,19 +18,19 @@ export function EgyptianShowcase() {
 
   const features = [
     {
-      image: 'https://images.unsplash.com/photo-1675654871683-abf6524f68c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBzcGljZSUyMHByb2Nlc3Npbmd8ZW58MXx8fHwxNzYxODQ1NzcwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+      image: '/processing_img.jpeg',
       title: 'State-of-the-Art Processing',
       description: 'Modern facilities with advanced technology ensuring premium quality and food safety standards',
       gradient: 'from-emerald-500/20 to-green-500/20'
     },
     {
-      image: 'https://images.unsplash.com/photo-1599536884823-1bc4fb5f9dea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGljZXMlMjBqYXJzJTIwYXJyYW5nZWR8ZW58MXx8fHwxNzYxODQ1NzcyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+      image: '/selection_img.jpeg',
       title: 'Premium Selection',
       description: 'Carefully curated herbs and spices meeting the highest international export standards',
       gradient: 'from-amber-500/20 to-yellow-500/20'
     },
     {
-      image: 'https://images.unsplash.com/photo-1713859326033-f75e04439c3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaGlwcGluZyUyMGNvbnRhaW5lcnMlMjBleHBvcnR8ZW58MXx8fHwxNzYxODQ1NzcxfDA&ixlib=rb-4.1.0&q=80&w=1080',
+      image: '/export_img.jpeg',
       title: 'Global Export Excellence',
       description: 'Reliable shipping and logistics to deliver your orders anywhere in the world, on time',
       gradient: 'from-blue-500/20 to-cyan-500/20'
@@ -47,7 +47,7 @@ export function EgyptianShowcase() {
         <div 
           className="w-full h-full"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1618224025123-e72fa88fd4af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZ3lwdGlhbiUyMHB5cmFtaWRzJTIwZ29sZGVufGVufDF8fHx8MTc2MTM0NDMwMnww&ixlib=rb-4.1.0&q=80&w=1080')`,
+            backgroundImage: `url('/excellence_section_bg.jpeg')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}

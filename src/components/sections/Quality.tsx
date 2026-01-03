@@ -173,7 +173,7 @@ export function Quality() {
               className="relative"
             >
               <Image
-                src="https://images.unsplash.com/photo-1761143551108-d4cb55afd1da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZ3lwdGlhbiUyMGN1bHR1cmUlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzYxMzQzMTEyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/quality_control_img.jpeg"
                 alt="Egyptian Quality"
                 width={600}
                 height={400}
