@@ -175,7 +175,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
             >
-              Al Rehab Group for Export is one of Egypt&apos;s leading suppliers of premium organic dried herbs, spices, and seeds. Located in Al Fayoum, Egypt, we have been working as growers, producers, and exporters of bulk herbs for many years.
+              Al Rehab Group for Export is one of Egypt&apos;s leading suppliers of premium dried herbs, spices, and seeds. Located in Al Fayoum, Egypt, we have been working as growers, producers, and exporters of bulk herbs for many years.
             </motion.p>
 
             {/* Animated Buttons */}
@@ -215,7 +215,7 @@ export function Hero() {
             >
               {[
                 { value: '50+', label: 'Countries Served', color: 'text-[#213D35]', icon: '🌍' },
-                { value: '100%', label: 'Organic Options', color: 'text-[#5E7C6C]', icon: '🌿' },
+                { value: '1500 tons', label: 'Over 500 Hectares in 2025', color: 'text-[#5E7C6C]', icon: '🌿' },
                 { value: 'A+', label: 'Expert Team', color: 'text-[#213D35]', icon: '⭐' }
               ].map((stat, index) => (
                 <motion.div
