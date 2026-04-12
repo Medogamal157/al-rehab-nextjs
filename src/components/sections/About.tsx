@@ -19,7 +19,7 @@ export function About() {
   const features = [
     {
       icon: Leaf,
-      title: 'Natural & Organic',
+      title: 'Natural',
       description: 'Sourced from the finest Egyptian farms using sustainable practices',
       color: 'text-[#213D35]'
     },
