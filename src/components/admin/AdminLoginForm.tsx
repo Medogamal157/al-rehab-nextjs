@@ -154,13 +154,13 @@ export function AdminLoginForm() {
           </div>
 
           {/* Remove Admin Credentials Note in production */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          {/* <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-xs text-blue-800 text-center">
               <strong>Admin Login:</strong><br />
               Email: admin@alrehabgroup.com<br />
               Password: Admin@2024!Secure
             </p>
-          </div>
+          </div> */}
         </div>
       </motion.div>
     </div>
