@@ -13,6 +13,7 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "npx tsx prisma/seed.ts",
+    "db:reset-password": "npx tsx prisma/reset-password.ts",
     "db:studio": "prisma studio"
   },
   "overrides": {
