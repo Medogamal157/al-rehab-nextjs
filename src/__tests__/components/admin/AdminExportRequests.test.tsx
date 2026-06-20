@@ -51,6 +51,17 @@ describe('AdminExportRequests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetch.mockReset();
+    // Default fetch response (used by post-mutation refetches, etc.).
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: mockRequests,
+          pagination: { total: 3, page: 1, limit: 20, totalPages: 1 },
+          statusCounts: { NEW: 1, CONTACTED: 1, COMPLETED: 1 },
+        }),
+    });
   });
 
   it('renders export requests from initialData', () => {
@@ -72,7 +83,12 @@ describe('AdminExportRequests', () => {
   });
 
   it('displays correct stats counts', () => {
-    render(<AdminExportRequests initialData={mockRequests} />);
+    render(
+      <AdminExportRequests
+        initialData={mockRequests}
+        initialStatusCounts={{ NEW: 1, CONTACTED: 1, COMPLETED: 1 }}
+      />
+    );
 
     expect(screen.getByText('John Smith')).toBeInTheDocument();
 
@@ -87,32 +103,70 @@ describe('AdminExportRequests', () => {
     expect(screen.getByText('No requests found')).toBeInTheDocument();
   });
 
-  it('filters requests by search term', async () => {
+  it('filters requests by search term (server-side)', async () => {
     render(<AdminExportRequests initialData={mockRequests} />);
 
     expect(screen.getByText('John Smith')).toBeInTheDocument();
+
+    // Server returns only the matching request for this search.
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: [mockRequests[0]],
+          pagination: { total: 1, page: 1, limit: 20, totalPages: 1 },
+          statusCounts: { NEW: 1, CONTACTED: 1, COMPLETED: 1 },
+        }),
+    });
 
     const searchInput = screen.getByPlaceholderText(/search by name, email, company/i);
     await userEvent.type(searchInput, 'Fresh Foods');
 
+    await waitFor(() => {
+      expect(screen.queryByText('Marie Dupont')).not.toBeInTheDocument();
+    });
     expect(screen.getByText('John Smith')).toBeInTheDocument();
-    expect(screen.queryByText('Marie Dupont')).not.toBeInTheDocument();
     expect(screen.queryByText('Wei Chen')).not.toBeInTheDocument();
+
+    // The search term is forwarded to the server.
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('search=Fresh+Foods'),
+      expect.anything()
+    );
   });
 
-  it('filters requests by status', async () => {
+  it('filters requests by status (server-side)', async () => {
     render(<AdminExportRequests initialData={mockRequests} />);
 
     expect(screen.getByText('John Smith')).toBeInTheDocument();
 
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: [mockRequests[1]],
+          pagination: { total: 1, page: 1, limit: 20, totalPages: 1 },
+          statusCounts: { NEW: 1, CONTACTED: 1, COMPLETED: 1 },
+        }),
+    });
+
     // Get all comboboxes - first one is the status filter
     const comboboxes = screen.getAllByRole('combobox');
-    const statusFilter = comboboxes[0]; // First combobox is the main filter
+    const statusFilter = comboboxes[0];
     await userEvent.selectOptions(statusFilter, 'CONTACTED');
 
-    expect(screen.queryByText('John Smith')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('John Smith')).not.toBeInTheDocument();
+    });
     expect(screen.getByText('Marie Dupont')).toBeInTheDocument();
     expect(screen.queryByText('Wei Chen')).not.toBeInTheDocument();
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('status=CONTACTED'),
+      expect.anything()
+    );
   });
 
   it('opens detail modal when clicking view button', async () => {

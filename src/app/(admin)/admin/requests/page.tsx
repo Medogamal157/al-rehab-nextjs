@@ -13,29 +13,57 @@ export const metadata: Metadata = {
 };
 
 async function getExportRequests() {
+  const PAGE_SIZE = 20;
   try {
-    const requests = await prisma.exportRequest.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    const [requests, total, statusGroups] = await Promise.all([
+      prisma.exportRequest.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: PAGE_SIZE,
+      }),
+      prisma.exportRequest.count(),
+      prisma.exportRequest.groupBy({ by: ['status'], _count: true }),
+    ]);
 
-    // Serialize dates to ISO strings
-    return requests.map(request => ({
-      ...request,
-      createdAt: request.createdAt.toISOString(),
-      updatedAt: request.updatedAt.toISOString(),
-      respondedAt: request.respondedAt ? request.respondedAt.toISOString() : null,
-    }));
+    const statusCounts = statusGroups.reduce<Record<string, number>>((acc, g) => {
+      acc[g.status] = g._count;
+      return acc;
+    }, {});
+
+    return {
+      // Serialize dates to ISO strings
+      data: requests.map(request => ({
+        ...request,
+        createdAt: request.createdAt.toISOString(),
+        updatedAt: request.updatedAt.toISOString(),
+        respondedAt: request.respondedAt ? request.respondedAt.toISOString() : null,
+      })),
+      statusCounts,
+      pagination: {
+        total,
+        page: 1,
+        limit: PAGE_SIZE,
+        totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+      },
+    };
   } catch (error) {
     console.error('Failed to fetch export requests:', error);
-    return [];
+    return {
+      data: [],
+      statusCounts: {},
+      pagination: { total: 0, page: 1, limit: PAGE_SIZE, totalPages: 1 },
+    };
   }
 }
 
 export default async function AdminExportRequestsPage() {
   await verifyAdminAuth();
-  const requests = await getExportRequests();
+  const initial = await getExportRequests();
 
-  return <AdminExportRequests initialData={requests} />;
+  return (
+    <AdminExportRequests
+      initialData={initial.data}
+      initialPagination={initial.pagination}
+      initialStatusCounts={initial.statusCounts}
+    />
+  );
 }

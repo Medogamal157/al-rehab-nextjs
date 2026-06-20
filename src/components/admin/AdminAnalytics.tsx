@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Users, Globe, Package, Calendar, Monitor, Chrome, Eye } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Globe, Package, Calendar, Monitor, Chrome, Eye, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Analytics data interface
 interface AnalyticsData {
@@ -23,7 +24,89 @@ interface AdminAnalyticsProps {
   initialData: AnalyticsData;
 }
 
-export function AdminAnalytics({ initialData }: AdminAnalyticsProps) {
+type RangePreset = '7' | '30' | '90' | 'custom';
+
+const PRESET_LABELS: Record<Exclude<RangePreset, 'custom'>, string> = {
+  '7': 'Last 7 days',
+  '30': 'Last 30 days',
+  '90': 'Last 90 days',
+};
+
+// Map the /api/analytics response (which nests entity counts under `stats`)
+// to the flat AnalyticsData shape this component renders.
+function mapAnalyticsResponse(json: Record<string, unknown>): AnalyticsData {
+  const stats = (json.stats || {}) as Record<string, number>;
+  return {
+    totalProducts: stats.totalProducts ?? 0,
+    totalCategories: stats.totalCategories ?? 0,
+    totalCertificates: stats.totalCertificates ?? 0,
+    totalRequests: stats.totalRequests ?? 0,
+    recentRequests: stats.recentRequests ?? 0,
+    totalPageViews: stats.totalPageViews ?? 0,
+    pageViews: (json.pageViews as AnalyticsData['pageViews']) ?? [],
+    productViews: (json.productViews as AnalyticsData['productViews']) ?? [],
+    countryStats: (json.countryStats as AnalyticsData['countryStats']) ?? [],
+    monthlyRequests: (json.monthlyRequests as AnalyticsData['monthlyRequests']) ?? [],
+    deviceStats: (json.deviceStats as AnalyticsData['deviceStats']) ?? [],
+    browserStats: (json.browserStats as AnalyticsData['browserStats']) ?? [],
+  };
+}
+
+export function AdminAnalytics({ initialData: serverData }: AdminAnalyticsProps) {
+  const [data, setData] = useState<AnalyticsData>(serverData);
+  const [preset, setPreset] = useState<RangePreset>('30');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const isInitialMount = useRef(true);
+
+  // Alias so the existing JSX (which references `initialData`) renders live data.
+  const initialData = data;
+
+  const rangeLabel =
+    preset === 'custom'
+      ? customFrom && customTo
+        ? `${customFrom} → ${customTo}`
+        : 'Custom range'
+      : PRESET_LABELS[preset];
+
+  const fetchAnalytics = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (preset === 'custom') {
+        if (!customFrom || !customTo) {
+          setIsLoading(false);
+          return;
+        }
+        params.set('from', customFrom);
+        params.set('to', customTo);
+      } else {
+        params.set('period', preset);
+      }
+
+      const res = await fetch(`/api/analytics?${params.toString()}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to load analytics');
+      const json = await res.json();
+      setData(mapAnalyticsResponse(json));
+    } catch (err) {
+      console.error('Failed to fetch analytics:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [preset, customFrom, customTo]);
+
+  // Re-fetch when the range changes (skip the first render — server provided it).
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    fetchAnalytics();
+  }, [fetchAnalytics]);
+
   // Calculate totals from initialData
   const totalPageViews = initialData.totalPageViews || initialData.pageViews.reduce((sum, item) => sum + item.value, 0);
   const totalProductViews = initialData.productViews.reduce((sum, item) => sum + item.views, 0);
@@ -41,13 +124,68 @@ export function AdminAnalytics({ initialData }: AdminAnalyticsProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 bg-indigo-100 rounded-lg">
-          <BarChart3 className="w-6 h-6 text-indigo-600" />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-indigo-100 rounded-lg">
+            <BarChart3 className="w-6 h-6 text-indigo-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl text-gray-900">Analytics</h1>
+            <p className="text-sm text-gray-500">Real-time website performance and insights</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl text-gray-900">Analytics</h1>
-          <p className="text-sm text-gray-500">Real-time website performance and insights</p>
+
+        {/* Date range filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+          <div className="flex items-center rounded-lg border bg-white p-1">
+            {(['7', '30', '90'] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPreset(p)}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  preset === p
+                    ? 'bg-[#2d7a3e] text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {p}d
+              </button>
+            ))}
+            <button
+              onClick={() => setPreset('custom')}
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                preset === 'custom'
+                  ? 'bg-[#2d7a3e] text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Custom
+            </button>
+          </div>
+
+          {preset === 'custom' && (
+            <div className="flex items-center gap-2 rounded-lg border bg-white px-3 py-1.5">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={customFrom}
+                max={customTo || undefined}
+                onChange={(e) => setCustomFrom(e.target.value)}
+                aria-label="From date"
+                className="text-sm text-gray-700 focus:outline-none"
+              />
+              <span className="text-gray-400">–</span>
+              <input
+                type="date"
+                value={customTo}
+                min={customFrom || undefined}
+                onChange={(e) => setCustomTo(e.target.value)}
+                aria-label="To date"
+                className="text-sm text-gray-700 focus:outline-none"
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -64,7 +202,7 @@ export function AdminAnalytics({ initialData }: AdminAnalyticsProps) {
             <div className="p-2 bg-indigo-100 rounded-lg">
               <Eye className="w-5 h-5 text-indigo-600" />
             </div>
-            <span className="text-xs text-gray-500">Last 30 days</span>
+            <span className="text-xs text-gray-500">{rangeLabel}</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">{totalPageViews.toLocaleString()}</h3>
           <p className="text-sm text-gray-500">Page Views</p>

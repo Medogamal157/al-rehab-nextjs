@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Mail, Download, Eye, Calendar, Search, Filter, Trash2, X, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { Mail, Download, Eye, Calendar, Search, Filter, Trash2, X, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export interface ExportRequest {
@@ -23,30 +23,103 @@ export interface ExportRequest {
   respondedAt?: string | null;
 }
 
-interface AdminExportRequestsProps {
-  initialData?: ExportRequest[];
+type StatusFilter = 'all' | ExportRequest['status'];
+
+interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
-export function AdminExportRequests({ initialData = [] }: AdminExportRequestsProps) {
+interface AdminExportRequestsProps {
+  initialData?: ExportRequest[];
+  initialPagination?: Pagination;
+  initialStatusCounts?: Record<string, number>;
+}
+
+const DEFAULT_PAGINATION: Pagination = { total: 0, page: 1, limit: 20, totalPages: 1 };
+
+export function AdminExportRequests({
+  initialData = [],
+  initialPagination = DEFAULT_PAGINATION,
+  initialStatusCounts = {},
+}: AdminExportRequestsProps) {
   const [requests, setRequests] = useState<ExportRequest[]>(initialData);
+  const [pagination, setPagination] = useState<Pagination>(initialPagination);
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>(initialStatusCounts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'NEW' | 'IN_PROGRESS' | 'CONTACTED' | 'QUOTED' | 'COMPLETED' | 'CANCELLED'>('all');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all');
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ExportRequest | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const { toast } = useToast();
 
-  // Refetch function for after mutations
-  const refetchRequests = async () => {
+  // Skip the very first fetch since the server already provided page 1.
+  const isInitialMount = useRef(true);
+
+  // Keep a stable reference to toast so it doesn't churn fetchRequests identity.
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
+
+  // Debounce the search input (300ms) and reset to page 1 on new search.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  // Build the query string for the current filters/page.
+  const buildQuery = useCallback(
+    (overrides?: { page?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      params.set('page', String(overrides?.page ?? page));
+      params.set('limit', String(overrides?.limit ?? pagination.limit));
+      if (filterStatus !== 'all') params.set('status', filterStatus);
+      if (debouncedSearch) params.set('search', debouncedSearch);
+      return params.toString();
+    },
+    [page, pagination.limit, filterStatus, debouncedSearch]
+  );
+
+  const fetchRequests = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/export-requests', { credentials: 'include' });
-      if (response.ok) {
-        const responseData = await response.json();
-        setRequests(Array.isArray(responseData.data) ? responseData.data : []);
-      }
+      const response = await fetch(`/api/export-requests?${buildQuery()}`, {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Failed to load requests');
+      const json = await response.json();
+      setRequests(Array.isArray(json.data) ? json.data : []);
+      if (json.pagination) setPagination(json.pagination);
+      if (json.statusCounts) setStatusCounts(json.statusCounts);
     } catch (err) {
-      console.error('Failed to refetch requests:', err);
+      console.error('Failed to fetch requests:', err);
+      toastRef.current({
+        title: 'Error',
+        description: 'Failed to load export requests',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [buildQuery]);
+
+  // Re-fetch whenever filters/search/page change (but not on initial mount).
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    fetchRequests();
+  }, [debouncedSearch, filterStatus, page, fetchRequests]);
+
+  // Refetch the current view after a mutation.
+  const refetchRequests = fetchRequests;
 
   const handleStatusChange = async (id: string, status: ExportRequest['status']) => {
     try {
@@ -71,6 +144,9 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
       if (selectedRequest?.id === id) {
         setSelectedRequest({ ...selectedRequest, status });
       }
+
+      // Keep stat-card counts in sync with the server.
+      await refetchRequests();
 
       toast({
         title: 'Success',
@@ -122,6 +198,28 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
 
   const handleExportToExcel = async () => {
     try {
+      // Fetch ALL rows matching the current filter (not just the current page).
+      const params = new URLSearchParams();
+      params.set('page', '1');
+      params.set('limit', '100');
+      if (filterStatus !== 'all') params.set('status', filterStatus);
+      if (debouncedSearch) params.set('search', debouncedSearch);
+
+      const allRows: ExportRequest[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+      do {
+        params.set('page', String(currentPage));
+        const res = await fetch(`/api/export-requests?${params.toString()}`, {
+          credentials: 'include',
+        });
+        if (!res.ok) throw new Error('Failed to fetch data for export');
+        const json = await res.json();
+        if (Array.isArray(json.data)) allRows.push(...json.data);
+        totalPages = json.pagination?.totalPages ?? 1;
+        currentPage += 1;
+      } while (currentPage <= totalPages);
+
       // Dynamic import of exceljs
       const ExcelJS = await import('exceljs');
       
@@ -142,7 +240,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
       ];
       
       // Add rows
-      filteredRequests.forEach(req => {
+      allRows.forEach(req => {
         worksheet.addRow({
           company: req.companyName,
           contact: req.contactName,
@@ -173,16 +271,6 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
       alert('Failed to export to Excel. Please try again.');
     }
   };
-
-  const filteredRequests = requests.filter(req => {
-    const matchesSearch = 
-      (req.contactName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (req.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (req.companyName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (req.country || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || req.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   const getStatusColor = (status: ExportRequest['status']) => {
     switch (status) {
@@ -246,7 +334,10 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
           <Filter className="w-5 h-5 text-gray-400" />
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}
+            onChange={(e) => {
+              setFilterStatus(e.target.value as StatusFilter);
+              setPage(1);
+            }}
             className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#2d7a3e] focus:border-transparent"
           >
             <option value="all">All Status</option>
@@ -266,7 +357,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">New Requests</span>
             <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm">
-              {requests.filter(r => r.status === 'NEW').length}
+              {statusCounts.NEW || 0}
             </span>
           </div>
         </div>
@@ -274,7 +365,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Contacted</span>
             <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-sm">
-              {requests.filter(r => r.status === 'CONTACTED').length}
+              {statusCounts.CONTACTED || 0}
             </span>
           </div>
         </div>
@@ -282,7 +373,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Completed</span>
             <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-sm">
-              {requests.filter(r => r.status === 'COMPLETED').length}
+              {statusCounts.COMPLETED || 0}
             </span>
           </div>
         </div>
@@ -312,7 +403,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredRequests.map((request, index) => (
+              {requests.map((request, index) => (
                 <motion.tr
                   key={request.id}
                   initial={{ opacity: 0 }}
@@ -376,7 +467,7 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
           </table>
         </div>
 
-        {filteredRequests.length === 0 && (
+        {!isLoading && requests.length === 0 && (
           <div className="text-center py-12">
             <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl text-gray-600 mb-2">No requests found</h3>
@@ -385,6 +476,52 @@ export function AdminExportRequests({ initialData = [] }: AdminExportRequestsPro
                 ? 'Try adjusting your search or filter'
                 : 'Export requests from customers will appear here'}
             </p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="flex items-center justify-center py-12 text-gray-500">
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            Loading requests...
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination.total > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t">
+            <p className="text-sm text-gray-500">
+              Showing{' '}
+              <span className="font-medium text-gray-700">
+                {(pagination.page - 1) * pagination.limit + 1}
+              </span>
+              {' '}–{' '}
+              <span className="font-medium text-gray-700">
+                {Math.min(pagination.page * pagination.limit, pagination.total)}
+              </span>
+              {' '}of{' '}
+              <span className="font-medium text-gray-700">{pagination.total}</span> requests
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={pagination.page <= 1 || isLoading}
+                className="flex items-center gap-1 px-3 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+              <span className="text-sm text-gray-600 px-2">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={pagination.page >= pagination.totalPages || isLoading}
+                className="flex items-center gap-1 px-3 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

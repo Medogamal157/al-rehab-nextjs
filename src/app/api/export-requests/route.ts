@@ -17,13 +17,22 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const search = searchParams.get('search')?.trim();
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20') || 20));
     const skip = (page - 1) * limit;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {};
-    if (status) where.status = status;
+    if (status && status !== 'all') where.status = status;
+    if (search) {
+      where.OR = [
+        { companyName: { contains: search, mode: 'insensitive' } },
+        { contactName: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { country: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
     const [exportRequests, total] = await Promise.all([
       prisma.exportRequest.findMany({
@@ -35,9 +44,20 @@ export async function GET(request: NextRequest) {
       prisma.exportRequest.count({ where }),
     ]);
 
+    // Global status counts for the dashboard stat cards (independent of paging/filters)
+    const statusGroups = await prisma.exportRequest.groupBy({
+      by: ['status'],
+      _count: true,
+    });
+    const statusCounts = statusGroups.reduce<Record<string, number>>((acc, g) => {
+      acc[g.status] = g._count;
+      return acc;
+    }, {});
+
     return NextResponse.json({
       success: true,
       data: exportRequests,
+      statusCounts,
       pagination: {
         total,
         page,

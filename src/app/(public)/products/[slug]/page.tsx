@@ -55,6 +55,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       'wholesale',
       ...(product.botanicalName ? [product.botanicalName] : []),
     ].filter(Boolean),
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://al-rehabgroup.com'}/products/${product.slug}`,
+    },
     openGraph: {
       title: `${product.name} | Al-Rehab Group for Export`,
       description: product.description || `Premium quality ${product.name} from Egypt`,
@@ -121,11 +124,27 @@ function ProductStructuredData({ product }: { product: {
     }
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+      { "@type": "ListItem", position: 2, name: "Products", item: `${baseUrl}/products` },
+      { "@type": "ListItem", position: 3, name: product.name, item: `${baseUrl}/products/${product.slug}` },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+    </>
   );
 }
 

@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyAdminToken } from '@/lib/admin-auth';
 
-// Simple in-memory cache for analytics data
-const analyticsCache: {
-  data: Record<string, unknown> | null;
-  timestamp: number;
-} = {
-  data: null,
-  timestamp: 0,
-};
+// In-memory cache for analytics data, keyed by the requested date range so that
+// changing the range returns the correct payload (previously a single cached
+// blob was returned for every range, ignoring the filter).
+const analyticsCache = new Map<string, { data: Record<string, unknown>; timestamp: number }>();
 
 const CACHE_DURATION = 60 * 1000; // 1 minute cache
 
@@ -49,18 +46,55 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  try {
-    // Check cache first
-    if (analyticsCache.data && Date.now() - analyticsCache.timestamp < CACHE_DURATION) {
-      return NextResponse.json(analyticsCache.data);
-    }
+  // Analytics is admin-only dashboard data.
+  const admin = await verifyAdminToken(request);
+  if (!admin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
+  try {
     const { searchParams } = new URL(request.url);
-    const period = parseInt(searchParams.get('period') || '30'); // days
+
+    // Resolve the date range. Supports either explicit from/to (ISO dates) or a
+    // `period` in days (default 30). `to` defaults to now.
+    const fromParam = searchParams.get('from');
+    const toParam = searchParams.get('to');
+    const period = parseInt(searchParams.get('period') || '30') || 30;
 
     const currentDate = new Date();
-    const startDate = new Date(currentDate.getTime() - period * 24 * 60 * 60 * 1000);
+    let endDate = currentDate;
+    let startDate: Date;
+
+    if (fromParam) {
+      const parsedFrom = new Date(fromParam);
+      if (!isNaN(parsedFrom.getTime())) {
+        startDate = parsedFrom;
+      } else {
+        startDate = new Date(currentDate.getTime() - period * 24 * 60 * 60 * 1000);
+      }
+      if (toParam) {
+        const parsedTo = new Date(toParam);
+        if (!isNaN(parsedTo.getTime())) {
+          // Include the whole end day.
+          parsedTo.setHours(23, 59, 59, 999);
+          endDate = parsedTo;
+        }
+      }
+    } else {
+      startDate = new Date(currentDate.getTime() - period * 24 * 60 * 60 * 1000);
+    }
+
     const sevenDaysAgo = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    // Cache key derived from the resolved range.
+    const cacheKey = `${startDate.getTime()}_${endDate.getTime()}`;
+    const cached = analyticsCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return NextResponse.json(cached.data);
+    }
+
+    // Reusable date filter for page-view queries within the selected range.
+    const dateRange = { gte: startDate, lte: endDate };
 
     // Get counts for entity stats
     const [
@@ -82,7 +116,7 @@ export async function GET(request: NextRequest) {
       by: ['pageName'],
       _count: true,
       where: {
-        createdAt: { gte: startDate },
+        createdAt: dateRange,
         pageName: { not: null },
       },
       orderBy: { _count: { pageName: 'desc' } },
@@ -94,7 +128,7 @@ export async function GET(request: NextRequest) {
       by: ['resourceSlug', 'pageName'],
       _count: true,
       where: {
-        createdAt: { gte: startDate },
+        createdAt: dateRange,
         pageType: 'DYNAMIC',
         resourceType: 'product',
       },
@@ -107,7 +141,7 @@ export async function GET(request: NextRequest) {
       by: ['country'],
       _count: true,
       where: {
-        createdAt: { gte: startDate },
+        createdAt: dateRange,
         country: { not: null },
       },
       orderBy: { _count: { country: 'desc' } },
@@ -163,7 +197,7 @@ export async function GET(request: NextRequest) {
       by: ['device'],
       _count: true,
       where: {
-        createdAt: { gte: startDate },
+        createdAt: dateRange,
         device: { not: null },
       },
       orderBy: { _count: { device: 'desc' } },
@@ -173,7 +207,7 @@ export async function GET(request: NextRequest) {
       by: ['browser'],
       _count: true,
       where: {
-        createdAt: { gte: startDate },
+        createdAt: dateRange,
         browser: { not: null },
       },
       orderBy: { _count: { browser: 'desc' } },
@@ -182,7 +216,7 @@ export async function GET(request: NextRequest) {
 
     // Get total page views count
     const totalPageViews = await prisma.pageView.count({
-      where: { createdAt: { gte: startDate } },
+      where: { createdAt: dateRange },
     });
 
     // Format data for response
@@ -224,8 +258,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Update cache
-    analyticsCache.data = responseData;
-    analyticsCache.timestamp = Date.now();
+    analyticsCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
 
     return NextResponse.json(responseData);
   } catch (error) {
